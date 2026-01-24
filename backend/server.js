@@ -7,6 +7,7 @@ const deployRouters = require('./routes/deployer');
 const vehicleRouters = require('./routes/vehicle');
 const fuelRouters = require('./routes/fuel');
 const reportRouters = require('./routes/report');
+const notificationRouters = require('./routes/notification');
 const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
@@ -56,6 +57,7 @@ app.use('/api/vehicle',upload.single('vimage'), vehicleRouters);
 app.use('/api/deployer', deployRouters);
 app.use('/api/fuel', fuelRouters);
 app.use('/api/report', reportRouters);
+app.use('/api/notification', notificationRouters);
 //connect to database
 mongoose.connect(process.env.MONGO_URI)
 .then(() => {

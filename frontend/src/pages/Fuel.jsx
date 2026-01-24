@@ -123,6 +123,8 @@ const Fuel = () => {
           return newMsgs;
         });
       }, 5000);
+      // Trigger notification update
+      window.dispatchEvent(new CustomEvent('notificationUpdated'));
     } catch (error) {
       console.error('Error updating fuel status:', error);
     } finally {

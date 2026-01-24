@@ -1,4 +1,6 @@
-const Fuel = require('../models/fuelModel'); // Assuming the model file is in the "../models" directory
+const Fuel = require('../models/fuelModel');
+const { createNotification } = require('./notificationController');
+const User = require('../models/userModel');
 
 // Controller function to create a fuel document
 const createFuel = async (req, res) => {
@@ -20,6 +22,28 @@ const createFuel = async (req, res) => {
 
     // Save the fuel document to the database
     await fuel.save();
+
+    // Create notification for fuel manager
+    const date = new Date().toLocaleDateString('en-US', { 
+      month: '2-digit', 
+      day: '2-digit', 
+      year: 'numeric' 
+    });
+    await createNotification(
+      'fuel manager',
+      null,
+      'fuel_request',
+      'New Fuel Request',
+      `You have a new fuel request from ${dName} ${dlastName} on ${date}.`,
+      {
+        fuelId: fuel._id,
+        driverName: `${dName} ${dlastName}`,
+        vehicleNo,
+        km,
+        splace,
+        dplace
+      }
+    );
 
     // Send a response indicating success
     res.status(201).json({ message: 'Fuel document created successfully', fuel });
@@ -69,6 +93,87 @@ const getAllFuelstatus = async (req, res) => {
       if (!fuel) {
         // If the fuel document is not found, send a 404 response
         return res.status(404).json({ error: 'Fuel document not found' });
+      }
+
+      // Get driver email from vehicle number
+      const driver = await User.findOne({ vehicleNo: fuel.vehicleNo, role: 'driver' });
+      const driverEmail = driver ? driver.email : null;
+      const date = new Date().toLocaleDateString('en-US', { 
+        month: '2-digit', 
+        day: '2-digit', 
+        year: 'numeric' 
+      });
+      const time = new Date().toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: true
+      });
+
+      // Create notification for driver
+      if (status === 'successed' || status === 'approved') {
+        await createNotification(
+          'driver',
+          driverEmail,
+          'fuel_approved',
+          'Fuel Request Approved',
+          `Your fuel request has been approved on ${date} at ${time}. ${litre} liters allocated for your mission from ${fuel.splace} to ${fuel.dplace}.`,
+          {
+            fuelId: fuel._id,
+            litre,
+            vehicleNo: fuel.vehicleNo,
+            splace: fuel.splace,
+            dplace: fuel.dplace,
+            date,
+            time
+          }
+        );
+
+        // Notify Dean about fuel approval
+        await createNotification(
+          'dean',
+          null,
+          'fuel_approved',
+          'Fuel Request Approved',
+          `Fuel request from ${fuel.dName} ${fuel.dlastName} (${fuel.vehicleNo}) was approved on ${date} at ${time}.`,
+          {
+            fuelId: fuel._id,
+            driverName: `${fuel.dName} ${fuel.dlastName}`,
+            vehicleNo: fuel.vehicleNo,
+            litre,
+            date,
+            time
+          }
+        );
+      } else if (status === 'declined' || status === 'rejected') {
+        await createNotification(
+          'driver',
+          driverEmail,
+          'fuel_declined',
+          'Fuel Request Declined',
+          `Your fuel request has been declined on ${date} at ${time}. Please contact the fuel manager for more information.`,
+          {
+            fuelId: fuel._id,
+            vehicleNo: fuel.vehicleNo,
+            date,
+            time
+          }
+        );
+
+        // Notify Dean about fuel decline
+        await createNotification(
+          'dean',
+          null,
+          'fuel_declined',
+          'Fuel Request Declined',
+          `Fuel request from ${fuel.dName} ${fuel.dlastName} (${fuel.vehicleNo}) was declined on ${date} at ${time}.`,
+          {
+            fuelId: fuel._id,
+            driverName: `${fuel.dName} ${fuel.dlastName}`,
+            vehicleNo: fuel.vehicleNo,
+            date,
+            time
+          }
+        );
       }
   
       // Send the updated fuel document as a response

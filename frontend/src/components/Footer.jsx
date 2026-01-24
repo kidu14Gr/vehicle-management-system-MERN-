@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import logo from '../assets/img/hawassalogo.jpeg'
+import logo from '../assets/img/logo.png'
 import { FiTwitter, FiFacebook, FiLinkedin, FiGithub } from 'react-icons/fi';
 
 const Footer = () => {
@@ -14,7 +14,7 @@ const Footer = () => {
                 <img src={logo} alt="Logo" className="w-full h-full object-cover" />
               </div>
               <span className="text-xl font-bold tracking-tight text-secondary-900">
-                HUVMS<span className="text-primary-600">.</span>
+                VMS<span className="text-primary-600">.</span>
               </span>
             </Link>
             <p className="text-secondary-500 leading-relaxed mb-8 max-w-xs">
@@ -59,7 +59,7 @@ const Footer = () => {
 
         <div className="pt-8 border-t border-secondary-50 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-secondary-400 text-sm">
-            © {new Date().getFullYear()} HUVMS Inc. All rights reserved.
+            © {new Date().getFullYear()} VMS Inc. All rights reserved.
           </p>
           <div className="flex gap-8">
             <a href="#" className="text-secondary-400 hover:text-secondary-600 text-sm">Terms of Service</a>

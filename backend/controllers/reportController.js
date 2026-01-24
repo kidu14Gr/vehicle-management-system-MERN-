@@ -1,4 +1,7 @@
-const Report = require('../models/reportModel'); // Assuming the model file is in the "../models" directory
+const Report = require('../models/reportModel');
+const { createNotification } = require('./notificationController');
+const User = require('../models/userModel');
+const Deployer = require('../models/deployerModel');
 
 const createReport = async (req, res) => {
     try {
@@ -18,6 +21,88 @@ const createReport = async (req, res) => {
   
       // Save the report to the database
       const savedReport = await report.save();
+
+      // Get driver info
+      const driver = await User.findOne({ vehicleNo, role: 'driver' });
+      const driverEmail = driver ? driver.email : null;
+      const driverName = `${firstName} ${lastName}`;
+      const date = new Date().toLocaleDateString('en-US', { 
+        month: '2-digit', 
+        day: '2-digit', 
+        year: 'numeric' 
+      });
+
+      // Notify Vehicle Deployer
+      await createNotification(
+        'vehicle deployer',
+        null,
+        'mission_completed',
+        'Mission Completed',
+        `${driverName} has completed the mission from ${splace} to ${dplace} on ${date}.`,
+        {
+          reportId: savedReport._id,
+          driverName,
+          driverEmail,
+          vehicleNo,
+          km,
+          litre,
+          splace,
+          dplace,
+          date
+        }
+      );
+
+      // Notify Fuel Manager
+      await createNotification(
+        'fuel manager',
+        null,
+        'mission_completed',
+        'Mission Completed',
+        `${driverName} has completed a mission on ${date}. Fuel consumption: ${litre} liters for ${km} km.`,
+        {
+          reportId: savedReport._id,
+          driverName,
+          vehicleNo,
+          km,
+          litre,
+          date
+        }
+      );
+
+      // Notify Dean
+      await createNotification(
+        'dean',
+        null,
+        'mission_completed',
+        'Mission Completed',
+        `${driverName} completed a mission from ${splace} to ${dplace} on ${date}.`,
+        {
+          reportId: savedReport._id,
+          driverName,
+          vehicleNo,
+          km,
+          litre,
+          splace,
+          dplace,
+          date
+        }
+      );
+
+      // Also notify when fuel is approved (if status is successed)
+      if (destStatus === 'successed') {
+        await createNotification(
+          'driver',
+          driverEmail,
+          'fuel_approved',
+          'Fuel Request Approved',
+          `Your fuel request has been approved. Mission completed successfully.`,
+          {
+            reportId: savedReport._id,
+            vehicleNo,
+            litre
+          }
+        );
+      }
   
       res.status(201).json(savedReport);
     } catch (err) {

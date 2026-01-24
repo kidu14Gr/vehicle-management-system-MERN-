@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import NavBar1 from '../components/NavBar1';
 import Footer from '../components/Footer';
 import { HiOutlineTruck, HiOutlineShieldCheck, HiOutlineChartBar, HiOutlineMap } from 'react-icons/hi2';
+import backgroundFleet from '../assets/img/backgroundfleet.jpg';
+
 
 const Home = () => {
   return (
@@ -38,7 +40,7 @@ const Home = () => {
                 <div className="absolute bottom-0 right-0 -mb-10 -mr-10 w-40 h-40 bg-accent-100 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-pulse delay-700"></div>
                 <img 
                   className="relative rounded-[3rem] shadow-2xl border border-white/20" 
-                  src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=1000" 
+                  src={backgroundFleet}
                   alt="Fleet Management Dashboard" 
                 />
               </div>

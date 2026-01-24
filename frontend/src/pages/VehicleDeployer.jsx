@@ -88,6 +88,8 @@ const VehicleDeployer = () => {
       setError(null);
       setIsLoading(false);
       fetchAllDeployers();
+      // Trigger notification update
+      window.dispatchEvent(new CustomEvent('notificationUpdated'));
     } catch (error) {
       setError(error.response?.data?.error || 'An error occurred');
       setIsLoading(false);

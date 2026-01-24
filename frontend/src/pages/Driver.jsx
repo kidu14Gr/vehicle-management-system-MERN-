@@ -19,6 +19,7 @@ const Driver = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [SuccessReportMessage, setSuccessReportMessage] = useState('');
   const [loading, setLoading] = useState(true);
+  const [missionAcknowledged, setMissionAcknowledged] = useState(false);
 
   // Prevent unauthorized access and back navigation
   useEffect(() => {
@@ -37,6 +38,12 @@ const Driver = () => {
       try {
         const response = await axios.get(`http://localhost:4000/api/deployer/${user.email}`);
         setDeploy(response.data);
+        // Check if mission was already acknowledged
+        if (response.data && response.data.acknowledged) {
+          setMissionAcknowledged(true);
+        } else {
+          setMissionAcknowledged(false);
+        }
       } catch (error) {
         console.error(error);
       } finally {
@@ -48,6 +55,21 @@ const Driver = () => {
       fetchDeploy();
     }
   }, [user]);
+
+  const acknowledgeMission = async () => {
+    if (!deploy) return;
+    
+    try {
+      await axios.patch(`http://localhost:4000/api/deployer/acknowledge/${deploy._id}`, {
+        driverEmail: user.email
+      });
+      setMissionAcknowledged(true);
+      // Trigger notification update
+      window.dispatchEvent(new CustomEvent('notificationUpdated'));
+    } catch (error) {
+      console.error('Error acknowledging mission:', error);
+    }
+  };
 
   const MarkerIcon = new L.Icon({
     iconUrl: 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png',
@@ -133,6 +155,8 @@ const Driver = () => {
       setDeploy(null);
       setFuelData([]);
       setTimeout(() => setSuccessReportMessage(''), 5000);
+      // Trigger notification update
+      window.dispatchEvent(new CustomEvent('notificationUpdated'));
     } catch (error) {
       console.error(error);
     }
@@ -187,6 +211,17 @@ const Driver = () => {
 
               {deploy ? (
                 <div className="space-y-4">
+                  {!missionAcknowledged && (
+                    <div className="p-4 bg-accent-50 border-2 border-accent-200 rounded-xl animate-pulse">
+                      <p className="text-sm font-semibold text-accent-900 mb-2">New Mission Assigned!</p>
+                      <button
+                        onClick={acknowledgeMission}
+                        className="w-full py-2 bg-accent-600 hover:bg-accent-700 text-white font-bold rounded-lg transition-all text-sm shadow-md shadow-accent-500/20"
+                      >
+                        Got it ✓
+                      </button>
+                    </div>
+                  )}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="p-4 bg-secondary-50 rounded-xl border border-secondary-100">
                       <p className="text-xs font-medium text-secondary-500 uppercase tracking-wider mb-1">From</p>

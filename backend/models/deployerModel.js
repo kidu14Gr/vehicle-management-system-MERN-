@@ -40,9 +40,16 @@ const deployerSchema = new Schema({
     required: true,
   },
   km: {
-    type: Number, // Assuming the image field stores the filenames
+    type: Number,
     required: true,
   },
+  acknowledged: {
+    type: Boolean,
+    default: false
+  },
+  acknowledgedAt: {
+    type: Date
+  }
  
 },{timestamps:true});
 
