@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import NavBar1 from '../components/NavBar1';
+import { useAuthContext } from '../hooks/useAuthContext';
+import { useNavigate } from 'react-router-dom';
 import 'leaflet/dist/leaflet.css';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
@@ -8,6 +10,8 @@ import L from 'leaflet'
 import { FiMapPin, FiTruck, FiNavigation, FiClock, FiCheckCircle, FiUsers, FiSearch, FiArrowRight } from 'react-icons/fi';
 
 const VehicleDeployer = () => {
+  const { user } = useAuthContext();
+  const navigate = useNavigate();
   const [drivers, setDrivers] = useState([]);
   const [email, setemail] = useState('');
   const [vehicleNo, setvehicleNo] = useState('');
@@ -103,6 +107,18 @@ const VehicleDeployer = () => {
       console.error(error);
     }
   };
+
+  // Prevent unauthorized access and back navigation
+  useEffect(() => {
+    if (!user) {
+      navigate('/login', { replace: true });
+      return;
+    }
+    if (user.role !== 'vehicle deployer') {
+      navigate('/', { replace: true });
+      return;
+    }
+  }, [user, navigate]);
 
   useEffect(() => {
     fetchAllDeployers();

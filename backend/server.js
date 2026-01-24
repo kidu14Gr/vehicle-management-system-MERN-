@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const userRouters = require('./routes/user');
+const pendingUserRouters = require('./routes/pendingUser');
 const deployRouters = require('./routes/deployer');
 const vehicleRouters = require('./routes/vehicle');
 const fuelRouters = require('./routes/fuel');
@@ -50,6 +51,7 @@ const upload = multer({ storage });
 
 //routes
 app.use('/api/user',upload.single('pimage'), userRouters);
+app.use('/api/pendinguser',upload.single('pimage'), pendingUserRouters);
 app.use('/api/vehicle',upload.single('vimage'), vehicleRouters);
 app.use('/api/deployer', deployRouters);
 app.use('/api/fuel', fuelRouters);

@@ -1,12 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react'
 import NavBar1 from '../components/NavBar1';
 import Footer from '../components/Footer';
+import { useAuthContext } from '../hooks/useAuthContext';
+import { useNavigate } from 'react-router-dom';
 import car from '../assets/img/car.jpeg'
 import axios from 'axios'
 import { FiPlus, FiTruck, FiUsers, FiDroplet, FiCheckCircle, FiImage, FiSettings, FiGrid, FiList } from 'react-icons/fi';
 import { AiOutlineLike } from "react-icons/ai";
 
 const VehicleManage = () => {
+  const { user } = useAuthContext();
+  const navigate = useNavigate();
   const img = useRef();
   const [oilType, setoilType] = useState('');
   const [driver, setDriver] = useState('');
@@ -75,10 +79,12 @@ const VehicleManage = () => {
 
   const fetchDrivers = async () => {
     try {
-      const response = await axios.get('http://localhost:4000/api/user/drivers/no');
-      setDrivers(response.data);
+      // Fetch all drivers, not just those without vehicles
+      const response = await axios.get('http://localhost:4000/api/user/drivers');
+      setDrivers(response.data || []);
     } catch (error) {
       console.error('Error fetching drivers:', error);
+      setDrivers([]);
     }
   };
 
@@ -90,6 +96,18 @@ const VehicleManage = () => {
       console.error('Error fetching vehicles:', error);
     }
   };
+
+  // Prevent unauthorized access and back navigation
+  useEffect(() => {
+    if (!user) {
+      navigate('/login', { replace: true });
+      return;
+    }
+    if (user.role !== 'vehicle manage') {
+      navigate('/', { replace: true });
+      return;
+    }
+  }, [user, navigate]);
 
   useEffect(() => {
     fetchDrivers();
@@ -107,8 +125,9 @@ const VehicleManage = () => {
       await axios.patch(`http://localhost:4000/api/user/${driver}`, { vehicleNo: vNo });
       await axios.patch(`http://localhost:4000/api/vehicle/${vId}`, { driverId: driver });
       setSuccessAssign('success');
-      fetchVehicles();
-      fetchDrivers();
+      setDriver(''); // Reset driver selection
+      await fetchVehicles();
+      await fetchDrivers(); // Refresh drivers list
       setIsLoading(false);
       setTimeout(() => {
         setSuccessAssign('');
@@ -267,11 +286,18 @@ const VehicleManage = () => {
                           <select 
                             className="flex-grow px-4 py-3 bg-secondary-50 border border-secondary-100 rounded-xl text-sm font-medium outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all appearance-none"
                             onChange={(e) => setDriver(e.target.value)}
+                            value={driver}
                           >
                             <option value="">Select available driver...</option>
-                            {drivers.map(d => (
-                              <option key={d._id} value={d._id}>{d.firstName} {d.lastName} ({d.drivertype})</option>
-                            ))}
+                            {drivers.length > 0 ? (
+                              drivers.map(d => (
+                                <option key={d._id} value={d._id}>
+                                  {d.firstName} {d.lastName} {d.drivertype ? `(${d.drivertype})` : ''} {d.vehicleNo ? `- Currently: ${d.vehicleNo}` : ''}
+                                </option>
+                              ))
+                            ) : (
+                              <option value="" disabled>No drivers available</option>
+                            )}
                           </select>
                           <button 
                             onClick={() => handleAssign(v._id, v.vehicleNo, index)}

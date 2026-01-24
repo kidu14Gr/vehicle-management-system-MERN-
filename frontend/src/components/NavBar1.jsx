@@ -10,6 +10,8 @@ const NavBar1 = () => {
   const { user } = useAuthContext();
   const [suser, setSUser] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [pendingUsers, setPendingUsers] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
   const { logout } = useLogout();
@@ -28,10 +30,53 @@ const NavBar1 = () => {
     fetchUser();
   }, [user]);
 
+  // Fetch pending users for notifications (only for administrators)
+  useEffect(() => {
+    const fetchPendingUsers = async () => {
+      if (user && user.role === 'administrator') {
+        try {
+          const response = await axios.get('http://localhost:4000/api/pendinguser');
+          setPendingUsers(response.data || []);
+        } catch (error) {
+          console.error('Error fetching pending users:', error);
+        }
+      }
+    };
+
+    fetchPendingUsers();
+    
+    // Listen for updates from other components
+    const handleUpdate = () => fetchPendingUsers();
+    window.addEventListener('pendingUsersUpdated', handleUpdate);
+    
+    // Refresh every 30 seconds
+    const interval = setInterval(fetchPendingUsers, 30000);
+    
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('pendingUsersUpdated', handleUpdate);
+    };
+  }, [user]);
+
   const handleLogout = () => {
     logout();
     navigate('/');
   };
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isNotificationOpen && !event.target.closest('.relative')) {
+        setIsNotificationOpen(false);
+      }
+      if (isDropdownOpen && !event.target.closest('.relative')) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isNotificationOpen, isDropdownOpen]);
 
   const getDashboardLink = () => {
     if (!suser) return '/';
@@ -77,21 +122,102 @@ const NavBar1 = () => {
             >
               <FiGrid /> Dashboard
             </Link>
-            <Link 
-              to="/"
-              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-secondary-500 hover:text-secondary-900 transition-all"
-            >
-              <FiHome /> Home
-            </Link>
           </div>
         )}
 
         {/* Right Side Actions */}
         <div className="flex items-center gap-4">
-          <button className="w-10 h-10 rounded-xl flex items-center justify-center text-secondary-400 hover:bg-slate-100 hover:text-secondary-900 transition-all relative">
-            <FiBell className="text-xl" />
-            <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
-          </button>
+          {user && user.role === 'administrator' && (
+            <div className="relative">
+              <button 
+                onClick={() => setIsNotificationOpen(!isNotificationOpen)}
+                className="w-10 h-10 rounded-xl flex items-center justify-center text-secondary-400 hover:bg-slate-100 hover:text-secondary-900 transition-all relative"
+              >
+                <FiBell className="text-xl" />
+                {pendingUsers.length > 0 && (
+                  <span className="absolute top-2.5 right-2.5 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full border-2 border-white flex items-center justify-center">
+                    {pendingUsers.length}
+                  </span>
+                )}
+              </button>
+
+              {/* Notification Dropdown */}
+              {isNotificationOpen && (
+                <div className="absolute top-full right-0 mt-4 w-80 bg-white rounded-3xl shadow-2xl border border-slate-100 py-4 animate-slide-up z-50">
+                  <div className="px-6 py-3 border-b border-slate-50">
+                    <h3 className="text-sm font-bold text-secondary-900">Notifications</h3>
+                  </div>
+                  <div className="max-h-96 overflow-y-auto">
+                    {pendingUsers.length === 0 ? (
+                      <div className="px-6 py-8 text-center">
+                        <p className="text-sm text-secondary-400">No pending requests</p>
+                      </div>
+                    ) : (
+                      <div className="px-2 py-2">
+                        {pendingUsers.map((pendingUser) => {
+                          const date = new Date(pendingUser.submittedAt || pendingUser.createdAt);
+                          const formattedDate = date.toLocaleDateString('en-US', { 
+                            month: '2-digit', 
+                            day: '2-digit', 
+                            year: 'numeric' 
+                          });
+                          const formattedTime = date.toLocaleTimeString('en-US', { 
+                            hour: '2-digit', 
+                            minute: '2-digit',
+                            hour12: true
+                          });
+                          
+                          return (
+                            <div 
+                              key={pendingUser._id}
+                              className="px-4 py-3 rounded-2xl hover:bg-slate-50 transition-all cursor-pointer"
+                              onClick={() => {
+                                setIsNotificationOpen(false);
+                                navigate('/administrator');
+                                // Scroll to pending users section
+                                setTimeout(() => {
+                                  const pendingSection = document.querySelector('[data-pending-users]');
+                                  if (pendingSection) {
+                                    pendingSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                  }
+                                }, 100);
+                              }}
+                            >
+                              <p className="text-sm text-secondary-900 font-medium mb-1">
+                                New registration request
+                              </p>
+                              <p className="text-xs text-secondary-500 mb-2">
+                                {pendingUser.firstName} {pendingUser.lastName} ({pendingUser.email})
+                              </p>
+                              <p className="text-xs text-secondary-400">
+                                Submitted on {formattedDate} at {formattedTime}
+                              </p>
+                              <p className="text-xs text-primary-600 font-medium mt-1">
+                                Waiting for your approval
+                              </p>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                  {pendingUsers.length > 0 && (
+                    <div className="px-6 py-3 border-t border-slate-50">
+                      <button
+                        onClick={() => {
+                          setIsNotificationOpen(false);
+                          navigate('/administrator');
+                        }}
+                        className="w-full text-sm font-bold text-primary-600 hover:text-primary-700 text-center"
+                      >
+                        View All Pending Requests
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
           
           <div className="h-8 w-px bg-slate-200 mx-2 hidden sm:block" />
 

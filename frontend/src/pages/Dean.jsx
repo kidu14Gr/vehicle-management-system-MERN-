@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import NavBar1 from '../components/NavBar1';
+import { useAuthContext } from '../hooks/useAuthContext';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios'
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import { format } from 'date-fns';
 import { FiClipboard, FiCheckCircle, FiClock, FiActivity, FiUser, FiTruck, FiTrendingUp, FiMapPin, FiChevronRight } from 'react-icons/fi';
 
 const Dean = () => {
+  const { user } = useAuthContext();
+  const navigate = useNavigate();
   const [reports, setReports] = useState([]);
   const [fuels, setFuels] = useState([]);
   const [vehicleFuel, setVehicleFuel] = useState([]);
@@ -14,6 +18,18 @@ const Dean = () => {
   const [totalKm, setTotalKm] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [activeTab, setActiveTab] = useState('completed');
+
+  // Prevent unauthorized access and back navigation
+  useEffect(() => {
+    if (!user) {
+      navigate('/login', { replace: true });
+      return;
+    }
+    if (user.role !== 'dean') {
+      navigate('/', { replace: true });
+      return;
+    }
+  }, [user, navigate]);
 
   useEffect(() => {
     const fetchAllData = async () => {

@@ -47,6 +47,23 @@ const getUserByEmail = async (req, res) => {
   }
 };
 
+const getUserById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ error: 'No such user' });
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 
 //login user
 const loginUser = async (req,res) => {
@@ -55,7 +72,14 @@ const loginUser = async (req,res) => {
         const user = await User.login(email , password, role)
         //create token
         const token = createToken(user._id)
-        res.status(200).json({email,token})
+        res.status(200).json({
+            email: user.email,
+            token,
+            role: user.role,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            _id: user._id
+        })
         }
         catch (error) {
             res.status(400).json({error: error.message})
@@ -96,7 +120,15 @@ const signupUser = async (req, res) => {
 
   const getAllDriversno = async (req, res) => {
     try {
-      const drivers = await User.find({ role: 'driver', vehicleNo: { $eq: '' } });
+      // Find drivers with no vehicle assigned (empty string, null, or undefined)
+      const drivers = await User.find({ 
+        role: 'driver', 
+        $or: [
+          { vehicleNo: '' },
+          { vehicleNo: null },
+          { vehicleNo: { $exists: false } }
+        ]
+      });
       res.status(200).json(drivers);
     } catch (error) {
       console.error('Error fetching drivers:', error);
@@ -131,4 +163,4 @@ const signupUser = async (req, res) => {
   };
   
 
-module.exports = {signupUser , loginUser , getUserByEmail, getAllUsers,  updateUserById, deleteUserById, getAllDrivers,getAllDriversno,updateUserVehicleNo}
+module.exports = {signupUser , loginUser , getUserByEmail, getUserById, getAllUsers,  updateUserById, deleteUserById, getAllDrivers,getAllDriversno,updateUserVehicleNo}

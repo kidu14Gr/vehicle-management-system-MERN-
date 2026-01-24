@@ -17,51 +17,110 @@ import UpdateProfile from './pages/UpdateProfile';
 function App() {
   const { user } = useAuthContext();
 
+  // Get dashboard route based on user role
+  const getDashboardRoute = () => {
+    if (!user) return '/';
+    const roleRoutes = {
+      'administrator': '/administrator',
+      'driver': '/driver',
+      'vehicle deployer': '/vehicledeployer',
+      'vehicle manage': '/vehiclemanage',
+      'fuel manager': '/fuel',
+      'dean': '/dean'
+    };
+    return roleRoutes[user.role] || '/';
+  };
+
+  // Protected Route Component with role checking
+  const ProtectedRoute = ({ children, requiredRole = null }) => {
+    if (!user) {
+      return <Navigate to="/login" replace />;
+    }
+    
+    // If a specific role is required, check it
+    if (requiredRole && user.role !== requiredRole) {
+      return <Navigate to={getDashboardRoute()} replace />;
+    }
+    
+    return children;
+  };
+
   return (
     <div className="App">
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route 
+          path="/" 
+          element={!user ? <Home /> : <Navigate to={getDashboardRoute()} replace />} 
+        />
         <Route 
           path="/login" 
-          element={!user ? <Login /> : <Navigate to="/" />} 
+          element={!user ? <Login /> : <Navigate to={getDashboardRoute()} replace />} 
         />
         <Route 
           path="/signup" 
-          element={!user ? <SignUp /> : <Navigate to="/" />} 
+          element={!user ? <SignUp /> : <Navigate to={getDashboardRoute()} replace />} 
         />
         
-        {/* Protected Routes */}
+        {/* Protected Routes with Role-Based Access */}
         <Route 
           path="/administrator" 
-          element={user ? <Administrator /> : <Navigate to="/login" />} 
+          element={
+            <ProtectedRoute requiredRole="administrator">
+              <Administrator />
+            </ProtectedRoute>
+          } 
         />
         <Route 
           path="/driver" 
-          element={user ? <Driver /> : <Navigate to="/login" />} 
+          element={
+            <ProtectedRoute requiredRole="driver">
+              <Driver />
+            </ProtectedRoute>
+          } 
         />
         <Route 
           path="/vehicledeployer" 
-          element={user ? <VehicleDeployer /> : <Navigate to="/login" />} 
+          element={
+            <ProtectedRoute requiredRole="vehicle deployer">
+              <VehicleDeployer />
+            </ProtectedRoute>
+          } 
         />
         <Route 
           path="/vehiclemanage" 
-          element={user ? <VehicleManage /> : <Navigate to="/login" />} 
+          element={
+            <ProtectedRoute requiredRole="vehicle manage">
+              <VehicleManage />
+            </ProtectedRoute>
+          } 
         />
         <Route 
           path="/fuel" 
-          element={user ? <Fuel /> : <Navigate to="/login" />} 
+          element={
+            <ProtectedRoute requiredRole="fuel manager">
+              <Fuel />
+            </ProtectedRoute>
+          } 
         />
         <Route 
           path="/dean" 
-          element={user ? <Dean /> : <Navigate to="/login" />} 
+          element={
+            <ProtectedRoute requiredRole="dean">
+              <Dean />
+            </ProtectedRoute>
+          } 
         />
         <Route 
           path="/updateprofile/:id" 
-          element={user ? <UpdateProfile /> : <Navigate to="/login" />} 
+          element={
+            <ProtectedRoute>
+              <UpdateProfile />
+            </ProtectedRoute>
+          } 
         />
 
         {/* Catch all */}
-        <Route path="*" element={<Navigate to="/" />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>
   );

@@ -1,14 +1,34 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useLogin } from '../hooks/useLogin';
+import { useAuthContext } from '../hooks/useAuthContext';
 import NavBar1 from '../components/NavBar1';
-import { HiOutlineEnvelope, HiOutlineLockClosed, HiOutlineArrowRight, HiOutlineBriefcase } from 'react-icons/hi2';
+import { HiOutlineEnvelope, HiOutlineLockClosed, HiOutlineArrowRight, HiOutlineBriefcase, HiOutlineEye, HiOutlineEyeSlash } from 'react-icons/hi2';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [role, setRole] = useState('driver');
   const { login, error, isLoading } = useLogin();
+  const { user } = useAuthContext();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      // Redirect based on role
+      const roleRoutes = {
+        'administrator': '/administrator',
+        'driver': '/driver',
+        'vehicle deployer': '/vehicledeployer',
+        'vehicle manage': '/vehiclemanage',
+        'fuel manager': '/fuel',
+        'dean': '/dean'
+      };
+      const route = roleRoutes[user.role] || '/';
+      navigate(route, { replace: true });
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,6 +56,7 @@ const Login = () => {
                   </div>
                   <input 
                     type="email"
+                    autoComplete="off"
                     className="w-full pl-11 pr-4 py-4 bg-secondary-50 border border-secondary-100 rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-secondary-900 placeholder-secondary-400"
                     placeholder="name@company.com"
                     value={email}
@@ -55,13 +76,21 @@ const Login = () => {
                     <HiOutlineLockClosed />
                   </div>
                   <input 
-                    type="password"
-                    className="w-full pl-11 pr-4 py-4 bg-secondary-50 border border-secondary-100 rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-secondary-900 placeholder-secondary-400"
+                    type={showPassword ? "text" : "password"}
+                    autoComplete="new-password"
+                    className="w-full pl-11 pr-12 py-4 bg-secondary-50 border border-secondary-100 rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-secondary-900 placeholder-secondary-400"
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-secondary-400 hover:text-secondary-600 transition-colors"
+                  >
+                    {showPassword ? <HiOutlineEyeSlash /> : <HiOutlineEye />}
+                  </button>
                 </div>
               </div>
 

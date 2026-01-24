@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import NavBar1 from '../components/NavBar1';
 import Footer from '../components/Footer';
+import { useAuthContext } from '../hooks/useAuthContext';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { 
   HiOutlineBeaker, 
@@ -14,6 +16,8 @@ import {
 } from 'react-icons/hi2';
 
 const Fuel = () => {
+  const { user } = useAuthContext();
+  const navigate = useNavigate();
   const [fuels, setFuels] = useState([]);
   const [vehicles, setVehicles] = useState([]);
   const [oil, setOil] = useState({});
@@ -24,6 +28,18 @@ const Fuel = () => {
   const [totalLiters, setTotalLiters] = useState(0);
   const [totalKm, setTotalKm] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState(null);
+
+  // Prevent unauthorized access and back navigation
+  useEffect(() => {
+    if (!user) {
+      navigate('/login', { replace: true });
+      return;
+    }
+    if (user.role !== 'fuel manager') {
+      navigate('/', { replace: true });
+      return;
+    }
+  }, [user, navigate]);
 
   useEffect(() => {
     const fetchAllFuel = async () => {

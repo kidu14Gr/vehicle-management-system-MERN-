@@ -2,11 +2,13 @@ import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useSignup } from '../hooks/useSignup';
 import NavBar1 from '../components/NavBar1';
-import { HiOutlineUser, HiOutlineEnvelope, HiOutlineLockClosed, HiOutlineArrowRight, HiOutlineBriefcase, HiOutlineCamera } from 'react-icons/hi2';
+import PasswordInput from '../components/PasswordInput';
+import { HiOutlineUser, HiOutlineEnvelope, HiOutlineArrowRight, HiOutlineBriefcase, HiOutlineCamera } from 'react-icons/hi2';
 
 const SignUp = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [role, setRole] = useState('driver');
@@ -25,6 +27,12 @@ const SignUp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate password confirmation
+    if (password !== confirmPassword) {
+      return;
+    }
+    
     const formData = new FormData();
     formData.append('email', email);
     formData.append('password', password);
@@ -115,6 +123,7 @@ const SignUp = () => {
                     </div>
                     <input 
                       type="text"
+                      autoComplete="off"
                       className="w-full pl-11 pr-4 py-3.5 bg-secondary-50 border border-secondary-100 rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-secondary-900"
                       placeholder="John"
                       value={firstName}
@@ -131,6 +140,7 @@ const SignUp = () => {
                     </div>
                     <input 
                       type="text"
+                      autoComplete="off"
                       className="w-full pl-11 pr-4 py-3.5 bg-secondary-50 border border-secondary-100 rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-secondary-900"
                       placeholder="Doe"
                       value={lastName}
@@ -149,6 +159,7 @@ const SignUp = () => {
                   </div>
                   <input 
                     type="email"
+                    autoComplete="off"
                     className="w-full pl-11 pr-4 py-3.5 bg-secondary-50 border border-secondary-100 rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-secondary-900"
                     placeholder="name@company.com"
                     value={email}
@@ -158,43 +169,34 @@ const SignUp = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-secondary-700 ml-1">Password</label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-secondary-400">
-                      <HiOutlineLockClosed />
-                    </div>
-                    <input 
-                      type="password"
-                      className="w-full pl-11 pr-4 py-3.5 bg-secondary-50 border border-secondary-100 rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-secondary-900 placeholder-secondary-300"
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                    />
+              <PasswordInput
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                confirmPassword={confirmPassword}
+                onConfirmChange={(e) => setConfirmPassword(e.target.value)}
+                showStrength={true}
+                label="Password"
+                placeholder="••••••••"
+              />
+
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-secondary-700 ml-1">Account Role</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-secondary-400">
+                    <HiOutlineBriefcase />
                   </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-secondary-700 ml-1">Account Role</label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-secondary-400">
-                      <HiOutlineBriefcase />
-                    </div>
-                    <select 
-                      className="w-full pl-11 pr-4 py-3.5 bg-secondary-50 border border-secondary-100 rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-secondary-900 appearance-none"
-                      value={role}
-                      onChange={(e) => setRole(e.target.value)}
-                      required
-                    >
-                      <option value="driver">Driver</option>
-                      <option value="administrator">Administrator</option>
-                      <option value="vehicle deployer">Vehicle Deployer</option>
-                      <option value="fuel manager">Fuel Manager</option>
-                      <option value="dean">Dean</option>
-                      <option value="vehicle manage">Vehicle Manager</option>
-                    </select>
-                  </div>
+                  <select 
+                    className="w-full pl-11 pr-4 py-3.5 bg-secondary-50 border border-secondary-100 rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-secondary-900 appearance-none"
+                    value={role}
+                    onChange={(e) => setRole(e.target.value)}
+                    required
+                  >
+                    <option value="driver">Driver</option>
+                    <option value="vehicle deployer">Vehicle Deployer</option>
+                    <option value="fuel manager">Fuel Manager</option>
+                    <option value="dean">Dean</option>
+                    <option value="vehicle manage">Vehicle Manager</option>
+                  </select>
                 </div>
               </div>
 
@@ -212,13 +214,13 @@ const SignUp = () => {
 
               <button 
                 type="submit"
-                disabled={isLoading}
-                className="w-full py-4 bg-secondary-900 hover:bg-black text-white font-bold rounded-2xl shadow-xl transition-all active:scale-[0.98] flex items-center justify-center gap-2 mt-4"
+                disabled={isLoading || password !== confirmPassword || !password}
+                className="w-full py-4 bg-secondary-900 hover:bg-black text-white font-bold rounded-2xl shadow-xl transition-all active:scale-[0.98] flex items-center justify-center gap-2 mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? (
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                 ) : (
-                  <>Create Account <HiOutlineArrowRight /></>
+                  <>Submit Request <HiOutlineArrowRight /></>
                 )}
               </button>
 

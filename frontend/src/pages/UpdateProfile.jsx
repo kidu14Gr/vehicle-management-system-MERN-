@@ -25,7 +25,7 @@ const UpdateProfile = () => {
   const [lastname, setLastname] = useState('');
   const [role, setRole] = useState('');
   const [pimage, setPimage] = useState(null);
-  const [urlpimage, setUrlPimage] = useState('https://via.placeholder.com/150');
+  const [urlpimage, setUrlPimage] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -35,12 +35,14 @@ const UpdateProfile = () => {
       try {
         const response = await axios.get(`http://localhost:4000/api/user/id/${id}`);
         const user = response.data;
-        setEmail(user.email);
-        setFirstname(user.firstName);
-        setLastname(user.lastName);
-        setRole(user.role);
-        if (user.pimages) {
+        setEmail(user.email || '');
+        setFirstname(user.firstName || '');
+        setLastname(user.lastName || '');
+        setRole(user.role || '');
+        if (user.pimages && user.pimages !== 'default-profile.png') {
           setUrlPimage(`http://localhost:4000/uploads/pimages/${user.pimages}`);
+        } else {
+          setUrlPimage('https://via.placeholder.com/150');
         }
       } catch (error) {
         console.error('Error fetching user:', error);
@@ -98,11 +100,20 @@ const UpdateProfile = () => {
               <div className="absolute -bottom-16 left-8">
                 <div className="relative group">
                   <div className="w-32 h-32 rounded-2xl border-4 border-white overflow-hidden bg-white shadow-enterprise">
-                    <img 
-                      src={urlpimage} 
-                      alt="Profile" 
-                      className="w-full h-full object-cover"
-                    />
+                    {urlpimage ? (
+                      <img 
+                        src={urlpimage} 
+                        alt="Profile" 
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.src = 'https://via.placeholder.com/150';
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-secondary-100 flex items-center justify-center">
+                        <HiOutlineUser className="text-4xl text-secondary-400" />
+                      </div>
+                    )}
                   </div>
                   <button 
                     onClick={() => imgRef.current.click()}

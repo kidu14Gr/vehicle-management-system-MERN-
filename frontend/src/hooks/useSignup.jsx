@@ -10,8 +10,9 @@ export const useSignup = () => {
   const signup = async (formData) => {
     setIsLoading(true)
     setError(null)
+    setSuccess(null)
 
-    const response = await fetch('http://localhost:4000/api/user/signup', {
+    const response = await fetch('http://localhost:4000/api/pendinguser', {
       method: 'POST',
       body: formData
     })
@@ -22,16 +23,8 @@ export const useSignup = () => {
       setError(json.error)
     }
     if (response.ok) {
-      // // save the user to local storage
-      // localStorage.setItem('Ruser', JSON.stringify(json))
-
-      // // update the auth context
-      // dispatch({ type: 'LOGIN', payload: json })
-      setSuccess('Account created successfully!')
-      // update loading state
+      setSuccess('Registration submitted successfully! Please wait for admin approval.')
       setIsLoading(false)
-
-      
     }
   }
 

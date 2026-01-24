@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import NavBar1 from '../components/NavBar1';
 import { useAuthContext } from '../hooks/useAuthContext';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
@@ -13,10 +14,23 @@ const Driver = () => {
   const [deploy, setDeploy] = useState(null);
   const [suser, setSUser] = useState(null);
   const { user } = useAuthContext();
+  const navigate = useNavigate();
   const [fuelData, setFuelData] = useState([]);
   const [successMessage, setSuccessMessage] = useState('');
   const [SuccessReportMessage, setSuccessReportMessage] = useState('');
   const [loading, setLoading] = useState(true);
+
+  // Prevent unauthorized access and back navigation
+  useEffect(() => {
+    if (!user) {
+      navigate('/login', { replace: true });
+      return;
+    }
+    if (user.role !== 'driver') {
+      navigate('/', { replace: true });
+      return;
+    }
+  }, [user, navigate]);
 
   useEffect(() => {
     const fetchDeploy = async () => {
