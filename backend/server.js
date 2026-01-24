@@ -14,13 +14,47 @@ const path = require('path');
 
 const app = express();
 
-//middleware
-app.use(express.json());
-app.use(cors()); //enable cors
-app.use((req,res,next) => {
-    console.log(req.path , req.method);
+// Security middleware (optional - install helmet and express-rate-limit for production)
+try {
+  const helmet = require('helmet');
+  app.use(helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" }
+  }));
+} catch (e) {
+  console.log('Helmet not installed - skipping security headers');
+}
+
+try {
+  const rateLimit = require('express-rate-limit');
+  const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // limit each IP to 100 requests per windowMs
+    message: 'Too many requests from this IP, please try again later.'
+  });
+  app.use('/api/', limiter);
+} catch (e) {
+  console.log('express-rate-limit not installed - skipping rate limiting');
+}
+
+// CORS configuration
+const corsOptions = {
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
+
+// Body parsing middleware
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Request logging middleware
+app.use((req, res, next) => {
+    console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
     next();
 });
+
+// Static file serving
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Set up multer storage and file filtering
@@ -58,14 +92,50 @@ app.use('/api/deployer', deployRouters);
 app.use('/api/fuel', fuelRouters);
 app.use('/api/report', reportRouters);
 app.use('/api/notification', notificationRouters);
-//connect to database
-mongoose.connect(process.env.MONGO_URI)
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({ error: 'Route not found' });
+});
+
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  const statusCode = err.statusCode || 500;
+  const message = process.env.NODE_ENV === 'production' 
+    ? 'Internal server error' 
+    : err.message;
+  
+  res.status(statusCode).json({ 
+    error: message,
+    ...(process.env.NODE_ENV !== 'production' && { stack: err.stack })
+  });
+});
+
+// Connect to database
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
 .then(() => {
-    //listen for request
-    app.listen(process.env.PORT, () => {
-        console.log("connect to database, listening on port",process.env.PORT)
-    })
+    console.log('✓ Connected to MongoDB');
+    // Listen for requests
+    const PORT = process.env.PORT || 4000;
+    app.listen(PORT, () => {
+        console.log(`✓ Server running on port ${PORT}`);
+        console.log(`✓ Environment: ${process.env.NODE_ENV || 'development'}`);
+    });
 })
 .catch((error) => {
-    console.log(error);
-})
+    console.error('✗ MongoDB connection error:', error);
+    process.exit(1);
+});
