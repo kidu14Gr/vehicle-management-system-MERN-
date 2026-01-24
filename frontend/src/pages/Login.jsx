@@ -38,16 +38,16 @@ const Login = () => {
   return (
     <div className="min-h-screen bg-secondary-50 flex flex-col">
       <NavBar1 />
-      <div className="flex-grow flex items-center justify-center p-6">
-        <div className="bg-white w-full max-w-[1000px] rounded-[2.5rem] shadow-glass border border-white overflow-hidden flex flex-col lg:flex-row">
+      <div className="flex-grow flex items-center justify-center p-4 sm:p-6 py-8 sm:py-12">
+        <div className="bg-white w-full max-w-[1000px] rounded-2xl sm:rounded-3xl shadow-glass border border-white overflow-hidden flex flex-col lg:flex-row">
           {/* Form Side */}
-          <div className="w-full lg:w-1/2 p-12 lg:p-20">
-            <div className="mb-12">
-              <h2 className="text-3xl font-bold text-secondary-900 mb-2">Welcome Back</h2>
-              <p className="text-secondary-500">Sign in to your HUVMS account to continue.</p>
+          <div className="w-full lg:w-1/2 p-6 sm:p-8 md:p-12 lg:p-20">
+            <div className="mb-8 sm:mb-12">
+              <h2 className="text-2xl sm:text-3xl font-bold text-secondary-900 mb-2">Welcome Back</h2>
+              <p className="text-sm sm:text-base text-secondary-500">Sign in to your HUVMS account to continue.</p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-secondary-700 ml-1">Email Address</label>
                 <div className="relative">
@@ -57,7 +57,7 @@ const Login = () => {
                   <input 
                     type="email"
                     autoComplete="off"
-                    className="w-full pl-11 pr-4 py-4 bg-secondary-50 border border-secondary-100 rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-secondary-900 placeholder-secondary-400"
+                    className="w-full pl-11 pr-4 py-3 sm:py-4 bg-secondary-50 border border-secondary-100 rounded-xl sm:rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-secondary-900 placeholder-secondary-400 text-sm sm:text-base touch-manipulation"
                     placeholder="name@company.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -78,7 +78,7 @@ const Login = () => {
                   <input 
                     type={showPassword ? "text" : "password"}
                     autoComplete="new-password"
-                    className="w-full pl-11 pr-12 py-4 bg-secondary-50 border border-secondary-100 rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-secondary-900 placeholder-secondary-400"
+                    className="w-full pl-11 pr-12 py-3 sm:py-4 bg-secondary-50 border border-secondary-100 rounded-xl sm:rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-secondary-900 placeholder-secondary-400 text-sm sm:text-base touch-manipulation"
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -87,9 +87,10 @@ const Login = () => {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-secondary-400 hover:text-secondary-600 transition-colors"
+                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-secondary-400 hover:text-secondary-600 transition-colors touch-manipulation"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
                   >
-                    {showPassword ? <HiOutlineEyeSlash /> : <HiOutlineEye />}
+                    {showPassword ? <HiOutlineEyeSlash className="text-lg sm:text-xl" /> : <HiOutlineEye className="text-lg sm:text-xl" />}
                   </button>
                 </div>
               </div>
@@ -101,7 +102,7 @@ const Login = () => {
                     <HiOutlineBriefcase />
                   </div>
                   <select 
-                    className="w-full pl-11 pr-4 py-4 bg-secondary-50 border border-secondary-100 rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-secondary-900 appearance-none"
+                    className="w-full pl-11 pr-4 py-3 sm:py-4 bg-secondary-50 border border-secondary-100 rounded-xl sm:rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-secondary-900 appearance-none text-sm sm:text-base touch-manipulation"
                     value={role}
                     onChange={(e) => setRole(e.target.value)}
                     required
@@ -125,7 +126,7 @@ const Login = () => {
               <button 
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-4 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-2xl shadow-lg shadow-primary-500/25 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                className="w-full py-3 sm:py-4 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl sm:rounded-2xl shadow-lg shadow-primary-500/25 transition-all active:scale-[0.98] flex items-center justify-center gap-2 text-sm sm:text-base touch-manipulation"
               >
                 {isLoading ? (
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -134,20 +135,20 @@ const Login = () => {
                 )}
               </button>
 
-              <p className="text-center text-secondary-500 text-sm mt-8">
+              <p className="text-center text-secondary-500 text-xs sm:text-sm mt-6 sm:mt-8">
                 Don't have an account? <Link to="/signup" className="text-primary-600 font-bold hover:underline">Create an account</Link>
               </p>
             </form>
           </div>
 
           {/* Visual Side */}
-          <div className="hidden lg:block lg:w-1/2 bg-secondary-900 p-20 relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-20 opacity-10">
+          <div className="hidden lg:block lg:w-1/2 bg-secondary-900 p-12 lg:p-20 relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-12 lg:p-20 opacity-10">
               <HiOutlineLockClosed size={400} className="text-white" />
             </div>
             <div className="relative z-10 h-full flex flex-col justify-center">
-              <h3 className="text-4xl font-bold text-white mb-6 leading-tight">Secure Access to <br/> Fleet Intelligence.</h3>
-              <p className="text-secondary-400 text-lg leading-relaxed mb-12">
+              <h3 className="text-3xl lg:text-4xl font-bold text-white mb-6 leading-tight">Secure Access to <br/> Fleet Intelligence.</h3>
+              <p className="text-secondary-400 text-base lg:text-lg leading-relaxed mb-12">
                 "Our fleet management system has transformed how we handle logistical operations, providing us with real-time data that drives efficiency."
               </p>
               <div className="flex items-center gap-4">

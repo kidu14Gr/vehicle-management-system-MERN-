@@ -182,63 +182,63 @@ const Driver = () => {
     <div className="min-h-screen bg-secondary-50 flex flex-col">
       <NavBar1 />
       
-      <main className="flex-grow container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-secondary-900 mb-2">Driver Dashboard</h1>
-          <p className="text-secondary-600">Track your mission and manage fuel requests</p>
+      <main className="flex-grow container mx-auto px-4 sm:px-6 py-6 sm:py-8">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-secondary-900 mb-2">Driver Dashboard</h1>
+          <p className="text-sm sm:text-base text-secondary-600">Track your mission and manage fuel requests</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
           {/* Left Column: Mission Info & Map */}
           <div className="lg:col-span-2 space-y-8">
             {/* Mission Card */}
-            <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-glass border border-white/20 p-6 animate-fade-in">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-secondary-900 flex items-center gap-2">
-                  <HiOutlineMapPin className="text-primary-600" />
-                  Current Mission
+            <div className="bg-white/80 backdrop-blur-md rounded-xl sm:rounded-2xl shadow-glass border border-white/20 p-4 sm:p-6 animate-fade-in">
+              <div className="flex items-center justify-between mb-4 sm:mb-6">
+                <h2 className="text-lg sm:text-xl font-semibold text-secondary-900 flex items-center gap-2">
+                  <HiOutlineMapPin className="text-primary-600 text-lg sm:text-xl" />
+                  <span>Current Mission</span>
                 </h2>
                 {deploy ? (
-                  <span className="px-3 py-1 bg-primary-100 text-primary-700 text-sm font-medium rounded-full">
+                  <span className="px-2 sm:px-3 py-1 bg-primary-100 text-primary-700 text-xs sm:text-sm font-medium rounded-full whitespace-nowrap">
                     In Progress
                   </span>
                 ) : (
-                  <span className="px-3 py-1 bg-secondary-100 text-secondary-600 text-sm font-medium rounded-full">
+                  <span className="px-2 sm:px-3 py-1 bg-secondary-100 text-secondary-600 text-xs sm:text-sm font-medium rounded-full whitespace-nowrap">
                     Idle
                   </span>
                 )}
               </div>
 
               {deploy ? (
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   {!missionAcknowledged && (
-                    <div className="p-4 bg-accent-50 border-2 border-accent-200 rounded-xl animate-pulse">
-                      <p className="text-sm font-semibold text-accent-900 mb-2">New Mission Assigned!</p>
+                    <div className="p-3 sm:p-4 bg-accent-50 border-2 border-accent-200 rounded-xl animate-pulse">
+                      <p className="text-xs sm:text-sm font-semibold text-accent-900 mb-2">New Mission Assigned!</p>
                       <button
                         onClick={acknowledgeMission}
-                        className="w-full py-2 bg-accent-600 hover:bg-accent-700 text-white font-bold rounded-lg transition-all text-sm shadow-md shadow-accent-500/20"
+                        className="w-full py-2.5 sm:py-2 bg-accent-600 hover:bg-accent-700 text-white font-bold rounded-lg transition-all text-sm shadow-md shadow-accent-500/20 touch-manipulation"
                       >
                         Got it ✓
                       </button>
                     </div>
                   )}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="p-4 bg-secondary-50 rounded-xl border border-secondary-100">
-                      <p className="text-xs font-medium text-secondary-500 uppercase tracking-wider mb-1">From</p>
-                      <p className="text-secondary-900 font-semibold">{deploy.splace}</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <div className="p-3 sm:p-4 bg-secondary-50 rounded-xl border border-secondary-100">
+                      <p className="text-[10px] sm:text-xs font-medium text-secondary-500 uppercase tracking-wider mb-1">From</p>
+                      <p className="text-sm sm:text-base text-secondary-900 font-semibold break-words">{deploy.splace}</p>
                     </div>
-                    <div className="p-4 bg-secondary-50 rounded-xl border border-secondary-100">
-                      <p className="text-xs font-medium text-secondary-500 uppercase tracking-wider mb-1">To</p>
-                      <p className="text-secondary-900 font-semibold">{deploy.dplace}</p>
+                    <div className="p-3 sm:p-4 bg-secondary-50 rounded-xl border border-secondary-100">
+                      <p className="text-[10px] sm:text-xs font-medium text-secondary-500 uppercase tracking-wider mb-1">To</p>
+                      <p className="text-sm sm:text-base text-secondary-900 font-semibold break-words">{deploy.dplace}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4 p-4 bg-primary-50 rounded-xl border border-primary-100">
-                    <div className="p-2 bg-primary-100 rounded-lg">
-                      <HiOutlineTruck className="text-primary-600 text-xl" />
+                  <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-primary-50 rounded-xl border border-primary-100">
+                    <div className="p-2 bg-primary-100 rounded-lg flex-shrink-0">
+                      <HiOutlineTruck className="text-primary-600 text-lg sm:text-xl" />
                     </div>
-                    <div>
-                      <p className="text-xs font-medium text-primary-600 uppercase tracking-wider mb-0.5">Distance</p>
-                      <p className="text-primary-900 font-bold text-lg">{deploy.km} <span className="text-sm font-normal text-primary-600">Kilometers</span></p>
+                    <div className="min-w-0">
+                      <p className="text-[10px] sm:text-xs font-medium text-primary-600 uppercase tracking-wider mb-0.5">Distance</p>
+                      <p className="text-primary-900 font-bold text-base sm:text-lg">{deploy.km} <span className="text-xs sm:text-sm font-normal text-primary-600">Kilometers</span></p>
                     </div>
                   </div>
                 </div>
@@ -253,7 +253,7 @@ const Driver = () => {
             </div>
 
             {/* Map Container */}
-            <div className="bg-white rounded-2xl shadow-enterprise border border-secondary-200 overflow-hidden h-[400px] relative z-0">
+            <div className="bg-white rounded-xl sm:rounded-2xl shadow-enterprise border border-secondary-200 overflow-hidden h-[300px] sm:h-[350px] md:h-[400px] relative z-0">
               {deploy && deploy.slat && deploy.slong && deploy.dlat && deploy.dlong ? (
                 <MapContainer center={[deploy.slat, deploy.slong]} zoom={7} className="h-full w-full">
                   <TileLayer
@@ -284,10 +284,10 @@ const Driver = () => {
           {/* Right Column: Fuel Requests & Actions */}
           <div className="space-y-8">
             {/* Fuel Request Section */}
-            <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-glass border border-white/20 p-6 animate-slide-up">
-              <h2 className="text-xl font-semibold text-secondary-900 mb-6 flex items-center gap-2">
-                <HiOutlineBeaker className="text-primary-600" />
-                Fuel Management
+            <div className="bg-white/80 backdrop-blur-md rounded-xl sm:rounded-2xl shadow-glass border border-white/20 p-4 sm:p-6 animate-slide-up">
+              <h2 className="text-lg sm:text-xl font-semibold text-secondary-900 mb-4 sm:mb-6 flex items-center gap-2">
+                <HiOutlineBeaker className="text-primary-600 text-lg sm:text-xl" />
+                <span>Fuel Management</span>
               </h2>
 
               {successMessage && (
@@ -305,11 +305,11 @@ const Driver = () => {
               )}
 
               {deploy && fuelData.length === 0 && !successMessage && (
-                <div className="p-6 bg-secondary-50 rounded-2xl border border-secondary-100 text-center space-y-4">
-                  <p className="text-secondary-600 text-sm">You have an active mission. Need fuel?</p>
+                <div className="p-4 sm:p-6 bg-secondary-50 rounded-xl sm:rounded-2xl border border-secondary-100 text-center space-y-3 sm:space-y-4">
+                  <p className="text-secondary-600 text-xs sm:text-sm">You have an active mission. Need fuel?</p>
                   <button 
                     onClick={createFuel}
-                    className="w-full py-3 px-4 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-primary-500/30 active:scale-95"
+                    className="w-full py-2.5 sm:py-3 px-4 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-primary-500/30 active:scale-95 touch-manipulation text-sm sm:text-base"
                   >
                     Request Fuel
                   </button>
@@ -317,16 +317,16 @@ const Driver = () => {
               )}
 
               {fuelData.length > 0 && (
-                <div className="space-y-4">
-                  <p className="text-xs font-medium text-secondary-500 uppercase tracking-wider">Active Requests</p>
+                <div className="space-y-3 sm:space-y-4">
+                  <p className="text-[10px] sm:text-xs font-medium text-secondary-500 uppercase tracking-wider">Active Requests</p>
                   {fuelData.map((fuel) => (
-                    <div key={fuel._id} className="p-4 bg-white rounded-xl border border-secondary-100 shadow-sm space-y-4 transition-all hover:border-primary-200">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <p className="text-secondary-900 font-semibold">{fuel.vehicleNo}</p>
-                          <p className="text-xs text-secondary-500">{fuel.km} km distance</p>
+                    <div key={fuel._id} className="p-3 sm:p-4 bg-white rounded-xl border border-secondary-100 shadow-sm space-y-3 sm:space-y-4 transition-all hover:border-primary-200">
+                      <div className="flex justify-between items-start gap-2">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm sm:text-base text-secondary-900 font-semibold truncate">{fuel.vehicleNo}</p>
+                          <p className="text-[10px] sm:text-xs text-secondary-500">{fuel.km} km distance</p>
                         </div>
-                        <span className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${
+                        <span className={`px-2 py-1 rounded-md text-[9px] sm:text-[10px] font-bold uppercase tracking-wider whitespace-nowrap flex-shrink-0 ${
                           fuel.status === 'successed' ? 'bg-accent-100 text-accent-700' : 'bg-primary-100 text-primary-700'
                         }`}>
                           {fuel.status}
@@ -336,7 +336,7 @@ const Driver = () => {
                       {fuel.status === 'successed' && (
                         <button 
                           onClick={() => createReport(fuel.dName, fuel.dlastName, fuel.vehicleNo, fuel.km, fuel.litre, fuel._id)}
-                          className="w-full py-2 bg-accent-600 hover:bg-accent-700 text-white font-semibold rounded-lg transition-all text-sm shadow-md shadow-accent-500/20"
+                          className="w-full py-2.5 sm:py-2 bg-accent-600 hover:bg-accent-700 text-white font-semibold rounded-lg transition-all text-sm shadow-md shadow-accent-500/20 touch-manipulation"
                         >
                           Complete Mission
                         </button>
@@ -354,30 +354,30 @@ const Driver = () => {
             </div>
 
             {/* Driver Profile Summary */}
-            <div className="bg-secondary-900 rounded-2xl p-6 text-white overflow-hidden relative group">
-              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform duration-500">
-                <HiOutlineTruck size={100} />
+            <div className="bg-secondary-900 rounded-xl sm:rounded-2xl p-4 sm:p-6 text-white overflow-hidden relative group">
+              <div className="absolute top-0 right-0 p-2 sm:p-4 opacity-10 group-hover:scale-110 transition-transform duration-500">
+                <HiOutlineTruck size={80} className="sm:w-[100px] sm:h-[100px]" />
               </div>
-              <h3 className="text-lg font-semibold mb-4 relative z-10">Driver Info</h3>
+              <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 relative z-10">Driver Info</h3>
               {suser ? (
-                <div className="space-y-3 relative z-10">
+                <div className="space-y-2.5 sm:space-y-3 relative z-10">
                   <div>
-                    <p className="text-secondary-400 text-xs uppercase tracking-widest">Full Name</p>
-                    <p className="font-medium">{suser.firstName} {suser.lastName}</p>
+                    <p className="text-secondary-400 text-[10px] sm:text-xs uppercase tracking-widest">Full Name</p>
+                    <p className="font-medium text-sm sm:text-base">{suser.firstName} {suser.lastName}</p>
                   </div>
                   <div>
-                    <p className="text-secondary-400 text-xs uppercase tracking-widest">Vehicle Assigned</p>
-                    <p className="font-medium">{suser.vehicleNo || 'None'}</p>
+                    <p className="text-secondary-400 text-[10px] sm:text-xs uppercase tracking-widest">Vehicle Assigned</p>
+                    <p className="font-medium text-sm sm:text-base">{suser.vehicleNo || 'None'}</p>
                   </div>
                   <div>
-                    <p className="text-secondary-400 text-xs uppercase tracking-widest">Experience</p>
-                    <p className="font-medium text-primary-400">{suser.drivertype || 'Standard'}</p>
+                    <p className="text-secondary-400 text-[10px] sm:text-xs uppercase tracking-widest">Experience</p>
+                    <p className="font-medium text-sm sm:text-base text-primary-400">{suser.drivertype || 'Standard'}</p>
                   </div>
                 </div>
               ) : (
-                <div className="animate-pulse space-y-4">
-                  <div className="h-4 bg-white/10 rounded w-3/4"></div>
-                  <div className="h-4 bg-white/10 rounded w-1/2"></div>
+                <div className="animate-pulse space-y-3 sm:space-y-4">
+                  <div className="h-3 sm:h-4 bg-white/10 rounded w-3/4"></div>
+                  <div className="h-3 sm:h-4 bg-white/10 rounded w-1/2"></div>
                 </div>
               )}
             </div>

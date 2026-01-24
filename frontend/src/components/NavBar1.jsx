@@ -4,13 +4,14 @@ import { useAuthContext } from '../hooks/useAuthContext';
 import { useLogout } from '../hooks/useLogout';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import logo from '../assets/img/logo.png'
-import { FiLogOut, FiUser, FiBell, FiSettings, FiGrid, FiHome } from 'react-icons/fi';
+import { FiLogOut, FiUser, FiBell, FiSettings, FiGrid, FiHome, FiMenu, FiX } from 'react-icons/fi';
 
 const NavBar1 = () => {
   const { user } = useAuthContext();
   const [suser, setSUser] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [pendingUsers, setPendingUsers] = useState([]);
@@ -122,17 +123,24 @@ const NavBar1 = () => {
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (isNotificationOpen && !event.target.closest('.relative')) {
+      if (isNotificationOpen && !event.target.closest('.notification-dropdown')) {
         setIsNotificationOpen(false);
       }
-      if (isDropdownOpen && !event.target.closest('.relative')) {
+      if (isDropdownOpen && !event.target.closest('.profile-dropdown')) {
         setIsDropdownOpen(false);
+      }
+      if (isMobileMenuOpen && !event.target.closest('.mobile-menu')) {
+        setIsMobileMenuOpen(false);
       }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isNotificationOpen, isDropdownOpen]);
+    document.addEventListener('touchstart', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [isNotificationOpen, isDropdownOpen, isMobileMenuOpen]);
 
   const getDashboardLink = () => {
     if (!suser) return '/';
@@ -149,50 +157,52 @@ const NavBar1 = () => {
 
   return (
     <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-slate-200 shadow-sm">
-      <div className="container mx-auto px-6 h-20 flex items-center justify-between">
-        
-        {/* Logo & Brand */}
-        <div 
-          onClick={() => navigate('/')} 
-          className="flex items-center gap-3 cursor-pointer group"
-        >
-          <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg group-hover:scale-105 transition-transform">
-            <img src={logo} alt="HUVMS" className="w-full h-full object-cover" />
+      <div className="container mx-auto px-3 sm:px-4 md:px-6">
+        <div className="h-14 sm:h-16 md:h-20 flex items-center justify-between gap-2">
+          
+          {/* Logo & Brand */}
+          <div 
+            onClick={() => { navigate('/'); setIsMobileMenuOpen(false); }} 
+            className="flex items-center gap-1.5 sm:gap-2 md:gap-3 cursor-pointer group flex-shrink-0 min-w-0"
+          >
+            <div className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-xl overflow-hidden shadow-lg group-hover:scale-105 transition-transform flex-shrink-0">
+              <img src={logo} alt="VMS" className="w-full h-full object-cover" />
+            </div>
+            <div className="hidden sm:block min-w-0">
+              <span className="text-base sm:text-lg md:text-xl font-bold text-secondary-900 tracking-tight block">VMS</span>
+              <p className="text-[8px] sm:text-[9px] md:text-[10px] text-primary-600 font-bold uppercase tracking-wider leading-none mt-0.5">Fleet Core</p>
+            </div>
           </div>
-          <div className="hidden sm:block">
-            <span className="text-xl font-bold text-secondary-900 tracking-tight">VMS</span>
-            <p className="text-[10px] text-primary-600 font-bold uppercase tracking-wider leading-none mt-0.5">Fleet Core</p>
-          </div>
-        </div>
 
-        {/* Dashboard Nav Links */}
-        {user && (
-          <div className="hidden md:flex items-center gap-1 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
-            <Link 
-              to={getDashboardLink()}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
-                location.pathname === getDashboardLink() 
-                ? 'bg-white text-primary-600 shadow-sm' 
-                : 'text-secondary-500 hover:text-secondary-900'
-              }`}
-            >
-              <FiGrid /> Dashboard
-            </Link>
-          </div>
-        )}
+          {/* Desktop Dashboard Nav Links */}
+          {user && (
+            <div className="hidden md:flex items-center gap-1 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
+              <Link 
+                to={getDashboardLink()}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                  location.pathname === getDashboardLink() 
+                  ? 'bg-white text-primary-600 shadow-sm' 
+                  : 'text-secondary-500 hover:text-secondary-900'
+                }`}
+              >
+                <FiGrid /> Dashboard
+              </Link>
+            </div>
+          )}
 
-        {/* Right Side Actions */}
-        <div className="flex items-center gap-4">
+          {/* Right Side Actions - Always Visible */}
+          <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 lg:gap-4 flex-shrink-0">
           {/* Notification Bell - Show for all logged-in users */}
           {user && (
-            <div className="relative">
+            <div className="relative notification-dropdown">
               <button 
                 onClick={() => setIsNotificationOpen(!isNotificationOpen)}
-                className="w-10 h-10 rounded-xl flex items-center justify-center text-secondary-400 hover:bg-slate-100 hover:text-secondary-900 transition-all relative"
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-secondary-400 hover:bg-slate-100 hover:text-secondary-900 transition-all relative touch-manipulation flex-shrink-0"
+                aria-label="Notifications"
               >
-                <FiBell className="text-xl" />
+                <FiBell className="text-base sm:text-lg md:text-xl" />
                 {unreadCount > 0 && (
-                  <span className="absolute top-2.5 right-2.5 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full border-2 border-white flex items-center justify-center">
+                  <span className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 md:top-2.5 md:right-2.5 w-4 h-4 sm:w-4 sm:h-4 md:w-5 md:h-5 bg-red-500 text-white text-[9px] sm:text-[10px] md:text-xs font-bold rounded-full border-2 border-white flex items-center justify-center">
                     {unreadCount > 9 ? '9+' : unreadCount}
                   </span>
                 )}
@@ -200,8 +210,14 @@ const NavBar1 = () => {
 
               {/* Notification Dropdown */}
               {isNotificationOpen && (
-                <div className="absolute top-full right-0 mt-4 w-80 bg-white rounded-3xl shadow-2xl border border-slate-100 py-4 animate-slide-up z-50">
-                  <div className="px-6 py-3 border-b border-slate-50 flex items-center justify-between">
+                <>
+                  {/* Backdrop for mobile */}
+                  <div 
+                    className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 sm:hidden"
+                    onClick={() => setIsNotificationOpen(false)}
+                  />
+                  <div className="fixed sm:absolute top-16 sm:top-full right-4 sm:right-0 mt-0 sm:mt-2 md:mt-4 w-[calc(100vw-2rem)] sm:w-80 max-w-sm bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-100 py-3 sm:py-4 animate-slide-up z-50">
+                  <div className="px-4 sm:px-6 py-3 border-b border-slate-50 flex items-center justify-between">
                     <h3 className="text-sm font-bold text-secondary-900">Notifications</h3>
                     {unreadCount > 0 && (
                       <button
@@ -216,15 +232,15 @@ const NavBar1 = () => {
                             console.error('Error marking all as read:', error);
                           }
                         }}
-                        className="text-xs text-primary-600 hover:text-primary-700 font-medium"
+                        className="text-xs text-primary-600 hover:text-primary-700 font-medium touch-manipulation"
                       >
                         Mark all as read
                       </button>
                     )}
                   </div>
-                  <div className="max-h-96 overflow-y-auto">
+                  <div className="max-h-[60vh] sm:max-h-96 overflow-y-auto custom-scrollbar">
                     {notifications.length === 0 ? (
-                      <div className="px-6 py-8 text-center">
+                      <div className="px-4 sm:px-6 py-8 text-center">
                         <p className="text-sm text-secondary-400">No notifications</p>
                       </div>
                     ) : (
@@ -235,7 +251,7 @@ const NavBar1 = () => {
                           return (
                             <div 
                               key={notification._id}
-                              className={`px-4 py-3 rounded-2xl hover:bg-slate-50 transition-all cursor-pointer border-l-2 ${
+                              className={`px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl hover:bg-slate-50 transition-all cursor-pointer border-l-2 touch-manipulation ${
                                 !notification.read ? 'border-l-primary-500 bg-primary-50/30' : 'border-l-transparent'
                               }`}
                               onClick={() => {
@@ -263,14 +279,14 @@ const NavBar1 = () => {
                               }}
                             >
                               <div className="flex items-start justify-between gap-2">
-                                <div className="flex-1">
-                                  <p className={`text-sm font-medium mb-1 ${!notification.read ? 'text-secondary-900' : 'text-secondary-600'}`}>
+                                <div className="flex-1 min-w-0">
+                                  <p className={`text-xs sm:text-sm font-medium mb-1 ${!notification.read ? 'text-secondary-900' : 'text-secondary-600'}`}>
                                     {notification.title}
                                   </p>
-                                  <p className="text-xs text-secondary-500 mb-2">
+                                  <p className="text-[10px] sm:text-xs text-secondary-500 mb-1 sm:mb-2 line-clamp-2">
                                     {notification.message}
                                   </p>
-                                  <p className="text-xs text-secondary-400">
+                                  <p className="text-[10px] sm:text-xs text-secondary-400">
                                     {formattedDate} at {formattedTime}
                                   </p>
                                 </div>
@@ -285,7 +301,7 @@ const NavBar1 = () => {
                     )}
                   </div>
                   {notifications.length > 0 && (
-                    <div className="px-6 py-3 border-t border-slate-50">
+                    <div className="px-4 sm:px-6 py-3 border-t border-slate-50">
                       <button
                         onClick={() => {
                           setIsNotificationOpen(false);
@@ -300,26 +316,27 @@ const NavBar1 = () => {
                           };
                           navigate(roleRoutes[user.role] || '/');
                         }}
-                        className="w-full text-sm font-bold text-primary-600 hover:text-primary-700 text-center"
+                        className="w-full text-xs sm:text-sm font-bold text-primary-600 hover:text-primary-700 text-center touch-manipulation py-2"
                       >
                         View Dashboard
                       </button>
                     </div>
                   )}
-                </div>
+                  </div>
+                </>
               )}
             </div>
           )}
           
-          <div className="h-8 w-px bg-slate-200 mx-2 hidden sm:block" />
+          <div className="h-6 sm:h-8 w-px bg-slate-200 mx-0.5 sm:mx-1 md:mx-2 hidden sm:block" />
 
           {user ? (
-            <div className="relative">
+            <div className="relative profile-dropdown">
               <button 
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="flex items-center gap-3 pl-1.5 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-2xl hover:border-primary-200 transition-all group"
+                className="flex items-center gap-1 sm:gap-1.5 md:gap-3 pl-0.5 sm:pl-1 md:pl-1.5 pr-1 sm:pr-1.5 md:pr-3 py-0.5 sm:py-1 md:py-1.5 bg-slate-50 border border-slate-200 rounded-lg sm:rounded-xl md:rounded-2xl hover:border-primary-200 transition-all group touch-manipulation flex-shrink-0"
               >
-                <div className="w-10 h-10 rounded-xl overflow-hidden shadow-sm border border-white group-hover:scale-105 transition-transform">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-lg sm:rounded-xl overflow-hidden shadow-sm border border-white group-hover:scale-105 transition-transform flex-shrink-0">
                   {suser?.pimages ? (
                     <img
                       className="w-full h-full object-cover"
@@ -328,11 +345,11 @@ const NavBar1 = () => {
                     />
                   ) : (
                     <div className="w-full h-full bg-primary-100 flex items-center justify-center text-primary-600">
-                      <FiUser />
+                      <FiUser className="text-xs sm:text-sm md:text-base" />
                     </div>
                   )}
                 </div>
-                <div className="hidden sm:block text-left leading-tight mr-1">
+                <div className="hidden md:block text-left leading-tight mr-1">
                   <p className="text-xs font-bold text-secondary-900 truncate max-w-[120px]">{suser?.firstName || user.email}</p>
                   <p className="text-[10px] text-secondary-500 font-medium capitalize">{suser?.role || 'User'}</p>
                 </div>
@@ -340,38 +357,93 @@ const NavBar1 = () => {
 
               {/* Dropdown Menu */}
               {isDropdownOpen && (
-                <div className="absolute top-full right-0 mt-4 w-64 bg-white rounded-3xl shadow-2xl border border-slate-100 py-4 animate-slide-up">
-                  <div className="px-6 py-4 border-b border-slate-50 mb-2">
-                    <p className="text-sm font-bold text-secondary-900">{suser?.firstName} {suser?.lastName}</p>
-                    <p className="text-xs text-secondary-500">{user.email}</p>
+                <>
+                  {/* Backdrop for mobile */}
+                  <div 
+                    className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 sm:hidden"
+                    onClick={() => setIsDropdownOpen(false)}
+                  />
+                  <div className="fixed sm:absolute top-16 sm:top-full right-4 sm:right-0 mt-0 sm:mt-2 md:mt-4 w-[calc(100vw-2rem)] sm:w-56 md:w-64 max-w-xs bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-100 py-3 sm:py-4 animate-slide-up z-50">
+                  <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-slate-50 mb-2">
+                    <p className="text-sm font-bold text-secondary-900 truncate">{suser?.firstName} {suser?.lastName}</p>
+                    <p className="text-xs text-secondary-500 truncate">{user.email}</p>
                   </div>
                   <div className="px-2 space-y-1">
                     <button 
                       onClick={() => { navigate(`/updateprofile/${suser?._id}`); setIsDropdownOpen(false); }}
-                      className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium text-secondary-600 hover:bg-slate-50 hover:text-primary-600 transition-all"
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded-xl sm:rounded-2xl text-sm font-medium text-secondary-600 hover:bg-slate-50 hover:text-primary-600 transition-all touch-manipulation"
                     >
                       <FiUser className="text-lg" /> My Profile
                     </button>
-                    <button className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium text-secondary-600 hover:bg-slate-50 hover:text-primary-600 transition-all">
+                    <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl sm:rounded-2xl text-sm font-medium text-secondary-600 hover:bg-slate-50 hover:text-primary-600 transition-all touch-manipulation">
                       <FiSettings className="text-lg" /> Settings
                     </button>
                     <div className="h-px bg-slate-50 mx-4 my-2" />
                     <button 
                       onClick={handleLogout}
-                      className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold text-red-500 hover:bg-red-50 transition-all"
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded-xl sm:rounded-2xl text-sm font-bold text-red-500 hover:bg-red-50 transition-all touch-manipulation"
                     >
                       <FiLogOut className="text-lg" /> Sign Out
                     </button>
                   </div>
-                </div>
+                  </div>
+                </>
               )}
             </div>
           ) : (
-            <Link to="/login" className="px-6 py-2.5 bg-primary-600 text-white rounded-xl font-bold shadow-lg shadow-primary-600/20 hover:bg-primary-700 transition-all">
-              Sign In
+            <Link to="/login" className="px-2.5 sm:px-3 md:px-4 lg:px-6 py-1.5 sm:py-2 md:py-2.5 bg-primary-600 text-white rounded-lg sm:rounded-xl font-bold shadow-lg shadow-primary-600/20 hover:bg-primary-700 transition-all text-xs sm:text-sm md:text-base touch-manipulation whitespace-nowrap flex-shrink-0">
+              <span className="hidden sm:inline">Sign In</span>
+              <span className="sm:hidden">Login</span>
             </Link>
           )}
+
+          {/* Mobile Menu Button - Only for Dashboard Navigation */}
+          {user && (
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="sm:hidden w-9 h-9 flex items-center justify-center text-secondary-600 hover:bg-slate-100 rounded-lg sm:rounded-xl transition-all touch-manipulation ml-0.5 flex-shrink-0"
+              aria-label="Menu"
+            >
+              {isMobileMenuOpen ? <FiX className="text-base sm:text-lg" /> : <FiMenu className="text-base sm:text-lg" />}
+            </button>
+          )}
+          </div>
         </div>
+
+        {/* Mobile Menu */}
+        {user && isMobileMenuOpen && (
+          <div className="sm:hidden mobile-menu border-t border-slate-200 py-4 animate-slide-down">
+            <div className="space-y-2">
+              <Link
+                to={getDashboardLink()}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                  location.pathname === getDashboardLink()
+                    ? 'bg-primary-50 text-primary-600'
+                    : 'text-secondary-600 hover:bg-slate-50'
+                }`}
+              >
+                <FiGrid className="text-lg" /> Dashboard
+              </Link>
+              <Link
+                to={`/updateprofile/${suser?._id}`}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-secondary-600 hover:bg-slate-50 transition-all"
+              >
+                <FiUser className="text-lg" /> My Profile
+              </Link>
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  handleLogout();
+                }}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-red-500 hover:bg-red-50 transition-all"
+              >
+                <FiLogOut className="text-lg" /> Sign Out
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   );

@@ -47,32 +47,32 @@ const SignUp = () => {
   return (
     <div className="min-h-screen bg-secondary-50 flex flex-col">
       <NavBar1 />
-      <div className="flex-grow flex items-center justify-center p-6 py-12">
-        <div className="bg-white w-full max-w-[1100px] rounded-[2.5rem] shadow-glass border border-white overflow-hidden flex flex-col lg:flex-row">
+      <div className="flex-grow flex items-center justify-center p-4 sm:p-6 py-8 sm:py-12">
+        <div className="bg-white w-full max-w-[1100px] rounded-2xl sm:rounded-3xl shadow-glass border border-white overflow-hidden flex flex-col lg:flex-row">
           {/* Visual Side */}
-          <div className="hidden lg:block lg:w-2/5 bg-primary-600 p-16 relative overflow-hidden">
+          <div className="hidden lg:block lg:w-2/5 bg-primary-600 p-12 lg:p-16 relative overflow-hidden">
             <div className="absolute -top-20 -left-20 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
             <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-accent-400/20 rounded-full blur-3xl"></div>
             
             <div className="relative z-10 h-full flex flex-col justify-between text-white">
               <div>
-                <h3 className="text-4xl font-bold mb-6">Join the Future <br/> of Fleet.</h3>
-                <p className="text-primary-100 text-lg leading-relaxed">
+                <h3 className="text-3xl lg:text-4xl font-bold mb-6">Join the Future <br/> of Fleet.</h3>
+                <p className="text-primary-100 text-base lg:text-lg leading-relaxed">
                   Create an account to start managing missions, tracking fuel, and optimizing your vehicle logistics.
                 </p>
               </div>
               
-              <div className="space-y-8">
+              <div className="space-y-6 lg:space-y-8">
                 {[
                   { title: 'Centralized Control', desc: 'Manage all assets from a single dashboard.' },
                   { title: 'Real-time Insights', desc: 'Get data-driven reports on performance.' },
                   { title: 'Secure Access', desc: 'Enterprise-grade role-based security.' }
                 ].map((item, i) => (
                   <div key={i} className="flex gap-4">
-                    <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center font-bold text-xs">{i+1}</div>
+                    <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center font-bold text-xs flex-shrink-0">{i+1}</div>
                     <div>
-                      <p className="font-bold mb-0.5">{item.title}</p>
-                      <p className="text-primary-100 text-sm">{item.desc}</p>
+                      <p className="font-bold mb-0.5 text-sm lg:text-base">{item.title}</p>
+                      <p className="text-primary-100 text-xs lg:text-sm">{item.desc}</p>
                     </div>
                   </div>
                 ))}
@@ -81,27 +81,27 @@ const SignUp = () => {
           </div>
 
           {/* Form Side */}
-          <div className="w-full lg:w-3/5 p-12 lg:p-16">
-            <div className="mb-10">
-              <h2 className="text-3xl font-bold text-secondary-900 mb-2">Create Account</h2>
-              <p className="text-secondary-500">Enter your details to register as a fleet member.</p>
+          <div className="w-full lg:w-3/5 p-6 sm:p-8 md:p-12 lg:p-16">
+            <div className="mb-8 sm:mb-10">
+              <h2 className="text-2xl sm:text-3xl font-bold text-secondary-900 mb-2">Create Account</h2>
+              <p className="text-sm sm:text-base text-secondary-500">Enter your details to register as a fleet member.</p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="flex flex-col items-center mb-8">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+              <div className="flex flex-col items-center mb-6 sm:mb-8">
                 <div 
                   onClick={() => fileInputRef.current.click()}
-                  className="relative group cursor-pointer"
+                  className="relative group cursor-pointer touch-manipulation"
                 >
-                  <div className="w-24 h-24 rounded-2xl bg-secondary-50 border-2 border-dashed border-secondary-200 flex items-center justify-center overflow-hidden group-hover:border-primary-400 transition-all">
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl sm:rounded-2xl bg-secondary-50 border-2 border-dashed border-secondary-200 flex items-center justify-center overflow-hidden group-hover:border-primary-400 transition-all">
                     {preview ? (
                       <img src={preview} alt="Preview" className="w-full h-full object-cover" />
                     ) : (
-                      <HiOutlineCamera className="text-3xl text-secondary-300 group-hover:text-primary-500" />
+                      <HiOutlineCamera className="text-2xl sm:text-3xl text-secondary-300 group-hover:text-primary-500" />
                     )}
                   </div>
-                  <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center text-white shadow-lg">
-                    <HiOutlineCamera size={16} />
+                  <div className="absolute -bottom-2 -right-2 w-7 h-7 sm:w-8 sm:h-8 bg-primary-600 rounded-lg flex items-center justify-center text-white shadow-lg">
+                    <HiOutlineCamera size={14} className="sm:w-4 sm:h-4" />
                   </div>
                 </div>
                 <input 
@@ -111,10 +111,10 @@ const SignUp = () => {
                   hidden 
                   accept="image/*" 
                 />
-                <p className="text-[10px] font-bold text-secondary-400 uppercase tracking-widest mt-3">Upload Profile Image</p>
+                <p className="text-[10px] font-bold text-secondary-400 uppercase tracking-widest mt-2 sm:mt-3">Upload Profile Image</p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-secondary-700 ml-1">First Name</label>
                   <div className="relative">
@@ -124,7 +124,7 @@ const SignUp = () => {
                     <input 
                       type="text"
                       autoComplete="off"
-                      className="w-full pl-11 pr-4 py-3.5 bg-secondary-50 border border-secondary-100 rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-secondary-900"
+                      className="w-full pl-11 pr-4 py-3 sm:py-3.5 bg-secondary-50 border border-secondary-100 rounded-xl sm:rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-secondary-900 text-sm sm:text-base touch-manipulation"
                       placeholder="John"
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
@@ -141,7 +141,7 @@ const SignUp = () => {
                     <input 
                       type="text"
                       autoComplete="off"
-                      className="w-full pl-11 pr-4 py-3.5 bg-secondary-50 border border-secondary-100 rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-secondary-900"
+                      className="w-full pl-11 pr-4 py-3 sm:py-3.5 bg-secondary-50 border border-secondary-100 rounded-xl sm:rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-secondary-900 text-sm sm:text-base touch-manipulation"
                       placeholder="Doe"
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
@@ -160,7 +160,7 @@ const SignUp = () => {
                   <input 
                     type="email"
                     autoComplete="off"
-                    className="w-full pl-11 pr-4 py-3.5 bg-secondary-50 border border-secondary-100 rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-secondary-900"
+                    className="w-full pl-11 pr-4 py-3 sm:py-3.5 bg-secondary-50 border border-secondary-100 rounded-xl sm:rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-secondary-900 text-sm sm:text-base touch-manipulation"
                     placeholder="name@company.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -186,7 +186,7 @@ const SignUp = () => {
                     <HiOutlineBriefcase />
                   </div>
                   <select 
-                    className="w-full pl-11 pr-4 py-3.5 bg-secondary-50 border border-secondary-100 rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-secondary-900 appearance-none"
+                    className="w-full pl-11 pr-4 py-3 sm:py-3.5 bg-secondary-50 border border-secondary-100 rounded-xl sm:rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-secondary-900 appearance-none text-sm sm:text-base touch-manipulation"
                     value={role}
                     onChange={(e) => setRole(e.target.value)}
                     required
@@ -215,7 +215,7 @@ const SignUp = () => {
               <button 
                 type="submit"
                 disabled={isLoading || password !== confirmPassword || !password}
-                className="w-full py-4 bg-secondary-900 hover:bg-black text-white font-bold rounded-2xl shadow-xl transition-all active:scale-[0.98] flex items-center justify-center gap-2 mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full py-3 sm:py-4 bg-secondary-900 hover:bg-black text-white font-bold rounded-xl sm:rounded-2xl shadow-xl transition-all active:scale-[0.98] flex items-center justify-center gap-2 mt-4 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base touch-manipulation"
               >
                 {isLoading ? (
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -224,7 +224,7 @@ const SignUp = () => {
                 )}
               </button>
 
-              <p className="text-center text-secondary-500 text-sm mt-8">
+              <p className="text-center text-secondary-500 text-xs sm:text-sm mt-6 sm:mt-8">
                 Already have an account? <Link to="/login" className="text-primary-600 font-bold hover:underline">Sign In</Link>
               </p>
             </form>

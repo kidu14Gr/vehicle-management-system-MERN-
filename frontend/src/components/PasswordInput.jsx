@@ -67,7 +67,7 @@ const PasswordInput = ({
         <input 
           type={showPassword ? "text" : "password"}
           autoComplete="new-password"
-          className="w-full pl-11 pr-12 py-3.5 bg-secondary-50 border border-secondary-100 rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-secondary-900 placeholder-secondary-300"
+          className="w-full pl-11 pr-12 py-3 sm:py-3.5 bg-secondary-50 border border-secondary-100 rounded-xl sm:rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-secondary-900 placeholder-secondary-300 text-sm sm:text-base touch-manipulation"
           placeholder={placeholder}
           value={value}
           onChange={onChange}
@@ -76,22 +76,23 @@ const PasswordInput = ({
         <button
           type="button"
           onClick={() => setShowPassword(!showPassword)}
-          className="absolute inset-y-0 right-0 pr-4 flex items-center text-secondary-400 hover:text-secondary-600 transition-colors"
+          className="absolute inset-y-0 right-0 pr-4 flex items-center text-secondary-400 hover:text-secondary-600 transition-colors touch-manipulation"
+          aria-label={showPassword ? "Hide password" : "Show password"}
         >
-          {showPassword ? <HiOutlineEyeSlash /> : <HiOutlineEye />}
+          {showPassword ? <HiOutlineEyeSlash className="text-lg sm:text-xl" /> : <HiOutlineEye className="text-lg sm:text-xl" />}
         </button>
       </div>
 
       {/* Password Strength Indicator */}
       {showStrength && value && (
-        <div className="space-y-3 p-4 bg-secondary-50 rounded-xl border border-secondary-100">
+        <div className="space-y-2 sm:space-y-3 p-3 sm:p-4 bg-secondary-50 rounded-xl border border-secondary-100">
           {/* Strength Bar */}
           <div>
             <div className="flex justify-between items-center mb-2">
-              <span className="text-xs font-semibold text-secondary-600">Password Strength</span>
-              <span className="text-xs font-bold text-secondary-900">{Math.round(strength)}%</span>
+              <span className="text-[10px] sm:text-xs font-semibold text-secondary-600">Password Strength</span>
+              <span className="text-[10px] sm:text-xs font-bold text-secondary-900">{Math.round(strength)}%</span>
             </div>
-            <div className="w-full h-2 bg-secondary-200 rounded-full overflow-hidden">
+            <div className="w-full h-1.5 sm:h-2 bg-secondary-200 rounded-full overflow-hidden">
               <div 
                 className={`h-full transition-all duration-300 ${getStrengthColor()}`}
                 style={{ width: `${strength}%` }}
@@ -100,7 +101,7 @@ const PasswordInput = ({
           </div>
 
           {/* Strength Rules */}
-          <div className="space-y-2">
+          <div className="space-y-1.5 sm:space-y-2">
             {[
               { key: 'length', label: 'At least 8 characters' },
               { key: 'uppercase', label: 'One uppercase letter' },
@@ -108,11 +109,11 @@ const PasswordInput = ({
               { key: 'number', label: 'One number' },
               { key: 'special', label: 'One special character' }
             ].map(({ key, label }) => (
-              <div key={key} className="flex items-center gap-2 text-xs">
+              <div key={key} className="flex items-center gap-2 text-[10px] sm:text-xs">
                 {checks[key] ? (
-                  <HiOutlineCheckCircle className="text-green-500 flex-shrink-0" />
+                  <HiOutlineCheckCircle className="text-green-500 flex-shrink-0 text-sm sm:text-base" />
                 ) : (
-                  <HiOutlineXCircle className="text-red-400 flex-shrink-0" />
+                  <HiOutlineXCircle className="text-red-400 flex-shrink-0 text-sm sm:text-base" />
                 )}
                 <span className={checks[key] ? 'text-green-700 font-medium' : 'text-secondary-500'}>
                   {label}
@@ -134,7 +135,7 @@ const PasswordInput = ({
             <input 
               type={showConfirm ? "text" : "password"}
               autoComplete="new-password"
-              className="w-full pl-11 pr-12 py-3.5 bg-secondary-50 border border-secondary-100 rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-secondary-900 placeholder-secondary-300"
+              className="w-full pl-11 pr-12 py-3 sm:py-3.5 bg-secondary-50 border border-secondary-100 rounded-xl sm:rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-secondary-900 placeholder-secondary-300 text-sm sm:text-base touch-manipulation"
               placeholder="Confirm your password"
               value={confirmPassword}
               onChange={onConfirmChange}
@@ -143,16 +144,17 @@ const PasswordInput = ({
             <button
               type="button"
               onClick={() => setShowConfirm(!showConfirm)}
-              className="absolute inset-y-0 right-0 pr-4 flex items-center text-secondary-400 hover:text-secondary-600 transition-colors"
+              className="absolute inset-y-0 right-0 pr-4 flex items-center text-secondary-400 hover:text-secondary-600 transition-colors touch-manipulation"
+              aria-label={showConfirm ? "Hide confirm password" : "Show confirm password"}
             >
-              {showConfirm ? <HiOutlineEyeSlash /> : <HiOutlineEye />}
+              {showConfirm ? <HiOutlineEyeSlash className="text-lg sm:text-xl" /> : <HiOutlineEye className="text-lg sm:text-xl" />}
             </button>
             {confirmPassword && (
-              <div className="absolute right-12 top-1/2 -translate-y-1/2">
+              <div className="absolute right-10 sm:right-12 top-1/2 -translate-y-1/2">
                 {passwordsMatch ? (
-                  <HiOutlineCheckCircle className="text-green-500 text-xl" />
+                  <HiOutlineCheckCircle className="text-green-500 text-lg sm:text-xl" />
                 ) : (
-                  <HiOutlineXCircle className="text-red-500 text-xl" />
+                  <HiOutlineXCircle className="text-red-500 text-lg sm:text-xl" />
                 )}
               </div>
             )}
