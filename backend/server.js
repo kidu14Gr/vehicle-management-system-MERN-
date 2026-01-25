@@ -37,12 +37,38 @@ try {
 }
 
 // CORS configuration
-const corsOptions = {
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+const allowedOrigins = [
+  "http://localhost:3000", // React dev server (default)
+  "http://localhost:5173", // Vite dev server
+  process.env.FRONTEND_URL // Production frontend URL from environment
+].filter(Boolean); // Remove any undefined values
+
+// Log allowed origins on startup
+console.log('✓ CORS Allowed Origins:', allowedOrigins.length > 0 ? allowedOrigins : 'None configured');
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (Postman, mobile apps, server-to-server)
+    if (!origin) return callback(null, true);
+
+    // Check if origin is in allowed list
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    // Log blocked origin for debugging (only in development)
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('⚠ CORS blocked origin:', origin);
+      console.log('   Allowed origins:', allowedOrigins);
+    }
+
+    return callback(new Error("Not allowed by CORS"));
+  },
   credentials: true,
-  optionsSuccessStatus: 200
-};
-app.use(cors(corsOptions));
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
