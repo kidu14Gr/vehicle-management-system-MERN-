@@ -23,7 +23,7 @@ const Home = () => {
           <div className="flex flex-wrap items-center -mx-4">
             <div className={`w-full lg:w-1/2 px-4 mb-8 sm:mb-12 lg:mb-0 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
               <span className="inline-block py-1.5 px-3 sm:px-4 mb-3 sm:mb-4 text-[10px] sm:text-xs font-semibold text-primary-600 bg-primary-50 rounded-full uppercase tracking-widest animate-fade-in shadow-sm">
-                The Future of Fleet Management
+                Vehicle Management System
               </span>
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-secondary-900 mb-4 sm:mb-6 leading-tight animate-slide-up">
                 Manage your <span className="text-primary-600 relative inline-block">
