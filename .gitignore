@@ -179,7 +179,6 @@ temp/
 
 # Gatsby
 .cache/
-public/
 
 # Serverless directories
 .serverless/
